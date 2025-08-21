@@ -6,7 +6,7 @@ import { IoSearch } from "react-icons/io5";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-export default function SearchBar() {
+export default function SelectStocks() {
   const [inputValue, setInputValue] = useState("");
   const router = useRouter();
   function handleSubmit(e: FormEvent) {

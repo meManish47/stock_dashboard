@@ -2,6 +2,7 @@ import { CustomColorDemo, DefaultDemo } from "./expandables";
 import { ModeToggle } from "./mode-toggle";
 import { RiStockFill } from "react-icons/ri";
 import SearchBar from "./searchbar";
+import SelectStocks from "./searchbar";
 
 export default function HeaderComponent() {
   return (
@@ -16,7 +17,7 @@ export default function HeaderComponent() {
         <CustomColorDemo />
       </div>
       <div className="flex gap-4 items-center">
-        <SearchBar />
+        <SelectStocks />
         <ModeToggle />
       </div>
     </header>
