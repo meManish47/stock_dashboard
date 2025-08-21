@@ -16,9 +16,21 @@ import MinimalCard, {
   MinimalCardTitle,
 } from "@/components/ui/minimal-card";
 
+// Define the type for intraday data (5min intervals)
+type IntradayDataPoint = {
+  time: string;
+  close: number;
+};
+
+// Define the type for historical daily data
+type HistoricalDataPoint = {
+  time: string;
+  close: number;
+};
+
 export default function PriceCharts({ symbol }: { symbol: string }) {
-  const [intraday, setIntraday] = useState<any[]>([]);
-  const [historical, setHistorical] = useState<any[]>([]);
+  const [intraday, setIntraday] = useState<IntradayDataPoint[]>([]);
+  const [historical, setHistorical] = useState<HistoricalDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,12 +45,12 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         console.log("Intraday raw response:", data);
 
         if (data["Time Series (5min)"]) {
-          const formatted = Object.entries(data["Time Series (5min)"]).map(
-            ([time, values]: any) => ({
-              time,
-              close: parseFloat(values["4. close"]),
-            })
-          );
+          const formatted: IntradayDataPoint[] = Object.entries(
+            data["Time Series (5min)"]
+          ).map(([time, values]: [string, any]) => ({
+            time,
+            close: parseFloat(values["4. close"]),
+          }));
           setIntraday(formatted.reverse());
         } else if (data.Note || data["Error Message"]) {
           console.warn("Alpha Vantage intraday API returned error:", data);
@@ -57,12 +69,12 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         console.log("Historical raw response:", data);
 
         if (data["Time Series (Daily)"]) {
-          const formatted = Object.entries(data["Time Series (Daily)"]).map(
-            ([date, values]: any) => ({
-              time: date,
-              close: parseFloat(values["4. close"]),
-            })
-          );
+          const formatted: HistoricalDataPoint[] = Object.entries(
+            data["Time Series (Daily)"]
+          ).map(([date, values]: [string, any]) => ({
+            time: date,
+            close: parseFloat(values["4. close"]),
+          }));
           setHistorical(formatted.reverse());
         } else if (data.Note || data["Error Message"]) {
           console.warn("Alpha Vantage historical API returned error:", data);
@@ -78,8 +90,6 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
     );
   }, [symbol]);
 
-  console.log(intraday);
-  console.log(historical);
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Intraday Chart Card */}
