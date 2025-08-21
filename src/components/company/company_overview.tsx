@@ -77,7 +77,7 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
                     quote && quote?.dp >= 0 ? "text-green-400" : "text-red-500"
                   }
                 >
-                  {quote?.dp! >= 0 ? "↑" : "↓"} {quote?.dp.toFixed(2)}%
+                  {quote && quote?.dp >= 0 ? "↑" : "↓"} {quote?.dp.toFixed(2)}%
                 </span>
               </p>
             </div>
