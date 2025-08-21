@@ -74,7 +74,7 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
                 ${quote?.c.toFixed(2)}{" "}
                 <span
                   className={
-                    quote?.dp! >= 0 ? "text-green-400" : "text-red-500"
+                    quote && quote?.dp >= 0 ? "text-green-400" : "text-red-500"
                   }
                 >
                   {quote?.dp! >= 0 ? "↑" : "↓"} {quote?.dp.toFixed(2)}%

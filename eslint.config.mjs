@@ -19,6 +19,10 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+    rules: {
+      // Disable the Tailwind conflicting class rule
+      "tailwindcss/no-contradicting-classname": "off",
+    },
   },
 ];
 

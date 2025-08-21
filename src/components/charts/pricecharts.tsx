@@ -16,16 +16,58 @@ import MinimalCard, {
   MinimalCardTitle,
 } from "@/components/ui/minimal-card";
 
-// Define the type for intraday data (5min intervals)
+// Type for each intraday data point (5min intervals)
 type IntradayDataPoint = {
   time: string;
+  open: number;
+  high: number;
+  low: number;
   close: number;
+  volume: number;
 };
 
-// Define the type for historical daily data
+// Type for each historical data point (daily)
 type HistoricalDataPoint = {
   time: string;
+  open: number;
+  high: number;
+  low: number;
   close: number;
+  volume: number;
+};
+
+// Alpha Vantage intraday API response type
+type IntradayAPIResponse = {
+  "Meta Data": Record<string, string>;
+  "Time Series (5min)": Record<
+    string,
+    {
+      "1. open": string;
+      "2. high": string;
+      "3. low": string;
+      "4. close": string;
+      "5. volume": string;
+    }
+  >;
+  Note?: string;
+  "Error Message"?: string;
+};
+
+// Alpha Vantage historical daily API response type
+type HistoricalAPIResponse = {
+  "Meta Data": Record<string, string>;
+  "Time Series (Daily)": Record<
+    string,
+    {
+      "1. open": string;
+      "2. high": string;
+      "3. low": string;
+      "4. close": string;
+      "5. volume": string;
+    }
+  >;
+  Note?: string;
+  "Error Message"?: string;
 };
 
 export default function PriceCharts({ symbol }: { symbol: string }) {
@@ -41,15 +83,19 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         const res = await fetch(
           `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&outputsize=compact&apikey=${process.env.NEXT_PUBLIC_ALPHA_API_KEY}`
         );
-        const data = await res.json();
+        const data: IntradayAPIResponse = await res.json();
         console.log("Intraday raw response:", data);
 
         if (data["Time Series (5min)"]) {
           const formatted: IntradayDataPoint[] = Object.entries(
             data["Time Series (5min)"]
-          ).map(([time, values]: [string, any]) => ({
+          ).map(([time, values]) => ({
             time,
+            open: parseFloat(values["1. open"]),
+            high: parseFloat(values["2. high"]),
+            low: parseFloat(values["3. low"]),
             close: parseFloat(values["4. close"]),
+            volume: parseInt(values["5. volume"]),
           }));
           setIntraday(formatted.reverse());
         } else if (data.Note || data["Error Message"]) {
@@ -65,15 +111,19 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         const res = await fetch(
           `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${process.env.NEXT_PUBLIC_ALPHA_API_KEY}`
         );
-        const data = await res.json();
+        const data: HistoricalAPIResponse = await res.json();
         console.log("Historical raw response:", data);
 
         if (data["Time Series (Daily)"]) {
           const formatted: HistoricalDataPoint[] = Object.entries(
             data["Time Series (Daily)"]
-          ).map(([date, values]: [string, any]) => ({
+          ).map(([date, values]) => ({
             time: date,
+            open: parseFloat(values["1. open"]),
+            high: parseFloat(values["2. high"]),
+            low: parseFloat(values["3. low"]),
             close: parseFloat(values["4. close"]),
+            volume: parseInt(values["5. volume"]),
           }));
           setHistorical(formatted.reverse());
         } else if (data.Note || data["Error Message"]) {
