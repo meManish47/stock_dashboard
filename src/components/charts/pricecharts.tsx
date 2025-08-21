@@ -16,29 +16,32 @@ import MinimalCard, {
   MinimalCardTitle,
 } from "@/components/ui/minimal-card";
 
-const symbol = "AAPL";
-
-export default function PriceCharts() {
+export default function PriceCharts({ symbol }: { symbol: string }) {
   const [intraday, setIntraday] = useState<any[]>([]);
   const [historical, setHistorical] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!symbol) return;
+
     async function fetchIntraday() {
       try {
         const res = await fetch(
           `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&outputsize=compact&apikey=${process.env.NEXT_PUBLIC_ALPHA_API_KEY}`
         );
         const data = await res.json();
-        const timeSeries = data["Time Series (5min)"];
-        if (timeSeries) {
-          const formatted = Object.entries(timeSeries).map(
+        console.log("Intraday raw response:", data);
+
+        if (data["Time Series (5min)"]) {
+          const formatted = Object.entries(data["Time Series (5min)"]).map(
             ([time, values]: any) => ({
               time,
               close: parseFloat(values["4. close"]),
             })
           );
           setIntraday(formatted.reverse());
+        } else if (data.Note || data["Error Message"]) {
+          console.warn("Alpha Vantage intraday API returned error:", data);
         }
       } catch (err) {
         console.error("Intraday fetch error:", err);
@@ -51,26 +54,32 @@ export default function PriceCharts() {
           `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${process.env.NEXT_PUBLIC_ALPHA_API_KEY}`
         );
         const data = await res.json();
-        const timeSeries = data["Time Series (Daily)"];
-        if (timeSeries) {
-          const formatted = Object.entries(timeSeries).map(
+        console.log("Historical raw response:", data);
+
+        if (data["Time Series (Daily)"]) {
+          const formatted = Object.entries(data["Time Series (Daily)"]).map(
             ([date, values]: any) => ({
               time: date,
               close: parseFloat(values["4. close"]),
             })
           );
           setHistorical(formatted.reverse());
+        } else if (data.Note || data["Error Message"]) {
+          console.warn("Alpha Vantage historical API returned error:", data);
         }
       } catch (err) {
         console.error("Historical fetch error:", err);
       }
     }
 
+    setLoading(true);
     Promise.all([fetchIntraday(), fetchHistorical()]).finally(() =>
       setLoading(false)
     );
-  }, []);
+  }, [symbol]);
 
+  console.log(intraday);
+  console.log(historical);
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Intraday Chart Card */}

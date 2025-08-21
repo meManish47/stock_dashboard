@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { GridPatternLinearGradient } from "../pattern/gridpattern";
-import { getMultipleCompanyProfiles } from "@/actions/actions";
+import { getCompanyProfile } from "@/actions/actions";
 import { LuExternalLink } from "react-icons/lu";
 import { Button } from "../ui/button";
-
-const symbols = ["AAPL"]; // Only one company for now
 
 type CompanyProfile = {
   name: string;
@@ -18,16 +16,16 @@ type CompanyProfile = {
   weburl?: string;
 };
 
-export default function CompanyOverview() {
+export default function CompanyOverview({ symbol }: { symbol: string }) {
   const [company, setCompany] = useState<CompanyProfile | null>(null);
   const [quote, setQuote] = useState<{ c: number; dp: number } | null>(null);
   useEffect(() => {
-    getMultipleCompanyProfiles(symbols).then((profiles) => {
-      setCompany(profiles[0]); // Take the first company only
+    getCompanyProfile(symbol).then((profile) => {
+      setCompany(profile); // Take the first company only
     });
     async function fetchQuote() {
       const res = await fetch(
-        `https://finnhub.io/api/v1/quote?symbol=AAPL&token=${process.env.NEXT_PUBLIC_FINNHUB_API_KEY}`
+        `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${process.env.NEXT_PUBLIC_FINNHUB_API_KEY}`
       );
       const data = await res.json();
       setQuote({
@@ -36,7 +34,7 @@ export default function CompanyOverview() {
       });
     }
     fetchQuote();
-  }, []);
+  }, [symbol]);
 
   if (!company) return <div className="relative w-full h-60">Loading...</div>;
 
