@@ -39,7 +39,7 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
   if (!company) return <div className="relative w-full h-60">Loading...</div>;
 
   return (
-    <div className="relative w-full h-60">
+    <div className="relative w-full h-40 sm:h-60">
       {/* Background Grid Pattern */}
       <div className="absolute inset-0">
         <GridPatternLinearGradient />
@@ -56,12 +56,12 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
           />
 
           {/* Company Info */}
-          <div className="w-full pe-10 flex justify-between">
+          <div className="w-full sm:pe-10 flex justify-between">
             <div>
-              <h2 className="text-4xl font-bold  dark:text-gray-200">
+              <h2 className="text-lg sm:text-4xl font-bold  dark:text-gray-200">
                 {company.name} ({company.ticker})
               </h2>
-              <p className="flex text-muted-foreground text-xs">
+              <p className="flex text-muted-foreground text-[8px] sm:text-xs">
                 <div className="mt-2  dark:text-gray-300">
                   Market Cap: ${company.marketCapitalization.toLocaleString()} M
                   <br />
@@ -90,7 +90,8 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
                   className=" hover:underline "
                 >
                   <Button variant={"secondary"} className="cursor-pointer">
-                    Visit Website <LuExternalLink size={20} />
+                    <span className="hidden sm:block">Visit Website</span>{" "}
+                    <LuExternalLink size={20} />
                   </Button>
                 </a>
               )}

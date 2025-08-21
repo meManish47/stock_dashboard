@@ -93,7 +93,7 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Intraday Chart Card */}
-      <MinimalCard className="flex-1 h-[400px]">
+      <MinimalCard className="flex-1 h-[250px] sm:h-[400px]">
         <MinimalCardContent>
           <MinimalCardTitle>Intraday Chart ({symbol})</MinimalCardTitle>
           {loading ? (
@@ -101,11 +101,11 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
               Loading intraday...
             </p>
           ) : (
-            <div className="w-full h-80">
+            <div className="w-full h-60 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={intraday}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 15, right: 10, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="time" minTickGap={20} />
@@ -127,7 +127,7 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
       </MinimalCard>
 
       {/* Historical Chart Card */}
-      <MinimalCard className="flex-1 h-[400px]">
+      <MinimalCard className="flex-1 h-[200px] sm:h-[400px]">
         <MinimalCardContent>
           <MinimalCardTitle>Historical Chart ({symbol})</MinimalCardTitle>
           {loading ? (
@@ -135,11 +135,11 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
               Loading historical...
             </p>
           ) : (
-            <div className="w-full h-80">
+            <div className="w-full h-60 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={historical}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 15, right: 10, left: 10, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="time" minTickGap={20} />

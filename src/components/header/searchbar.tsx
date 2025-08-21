@@ -28,8 +28,8 @@ export default function SelectStocks() {
     <main className="flex justify-center">
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button className="w-48" variant={"outline"}>
-            Select Stock
+          <Button className=" sm:w-48 " variant={"outline"}>
+            <span className="hidden sm:block">Select Stock</span>
             <BiDownArrow />
           </Button>
         </DropdownMenuTrigger>

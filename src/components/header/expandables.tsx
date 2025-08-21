@@ -40,7 +40,7 @@ function CustomColorDemo() {
   ];
 
   return (
-    <div className="flex gap-8">
+    <div className="sm:flex hidden sm:gap-8 ">
       <ExpandableTabs
         tabs={tabs}
         activeColor="text-blue-500"
