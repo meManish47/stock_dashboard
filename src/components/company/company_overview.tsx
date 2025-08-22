@@ -5,6 +5,7 @@ import { GridPatternLinearGradient } from "../pattern/gridpattern";
 import { getCompanyProfile } from "@/actions/actions";
 import { LuExternalLink } from "react-icons/lu";
 import { Button } from "../ui/button";
+import { CompanyWithQuote } from "../table/tabledata";
 
 type CompanyProfile = {
   name: string;
@@ -16,18 +17,38 @@ type CompanyProfile = {
   weburl?: string;
 };
 
-export default function CompanyOverview({ symbol }: { symbol: string }) {
+export default function CompanyOverview({
+  symbol,
+  getTableData,
+}: {
+  symbol: string;
+  getTableData: (value: CompanyWithQuote) => void;
+}) {
   const [company, setCompany] = useState<CompanyProfile | null>(null);
   const [quote, setQuote] = useState<{ c: number; dp: number } | null>(null);
+  const [allQuote, setAllQuote] = useState<
+    | {
+        c: number;
+        d: number;
+        dp: number;
+        h: number;
+        l: number;
+        o: number;
+        pc: number;
+        t: number;
+      }
+    | undefined
+  >();
   useEffect(() => {
     getCompanyProfile(symbol).then((profile) => {
-      setCompany(profile); // Take the first company only
+      setCompany(profile);
     });
     async function fetchQuote() {
       const res = await fetch(
         `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${process.env.NEXT_PUBLIC_FINNHUB_API_KEY}`
       );
       const data = await res.json();
+      setAllQuote(data);
       setQuote({
         c: data.c,
         dp: ((data.c - data.pc) / data.pc) * 100,
@@ -35,7 +56,24 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
     }
     fetchQuote();
   }, [symbol]);
+  useEffect(() => {
+    if (!company || !allQuote) return;
 
+    const tableData: CompanyWithQuote = {
+      c: allQuote.c,
+      d: allQuote.d,
+      dp: allQuote.dp,
+      h: allQuote.h,
+      l: allQuote.l,
+      o: allQuote.o,
+      pc: allQuote.pc,
+      t: allQuote.t,
+      companyName: company.name,
+      symbol: company.ticker,
+    };
+
+    getTableData(tableData);
+  }, [company, allQuote]);
   if (!company) return <div className="relative w-full h-60">Loading...</div>;
 
   return (
@@ -58,7 +96,7 @@ export default function CompanyOverview({ symbol }: { symbol: string }) {
           {/* Company Info */}
           <div className="w-full sm:pe-10 flex justify-between">
             <div>
-              <h2 className="text-lg sm:text-4xl font-bold  dark:text-gray-200">
+              <h2 className="text-lg sm:text-4xl font-bold  dark:text-gray-200 line-clamp-2 ">
                 {company.name} ({company.ticker})
               </h2>
               <p className="flex text-muted-foreground text-[8px] sm:text-xs">

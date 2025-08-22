@@ -74,7 +74,7 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
   const [intraday, setIntraday] = useState<IntradayDataPoint[]>([]);
   const [historical, setHistorical] = useState<HistoricalDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState(false);
   useEffect(() => {
     if (!symbol) return;
 
@@ -83,6 +83,10 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         const res = await fetch(
           `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=${symbol}&interval=5min&outputsize=compact&apikey=${process.env.NEXT_PUBLIC_ALPHA_API_KEY}`
         );
+        if (!res.ok) {
+          setError(true);
+        }
+
         const data: IntradayAPIResponse = await res.json();
         console.log("Intraday raw response:", data);
 
@@ -103,6 +107,7 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         }
       } catch (err) {
         console.error("Intraday fetch error:", err);
+        setError(true);
       }
     }
 
@@ -111,6 +116,9 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         const res = await fetch(
           `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${process.env.NEXT_PUBLIC_ALPHA_API_KEY}`
         );
+        if (!res.ok) {
+          setError(true);
+        }
         const data: HistoricalAPIResponse = await res.json();
         console.log("Historical raw response:", data);
 
@@ -131,6 +139,7 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
         }
       } catch (err) {
         console.error("Historical fetch error:", err);
+        setError(true);
       }
     }
 
@@ -139,7 +148,6 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
       setLoading(false)
     );
   }, [symbol]);
-
   return (
     <div className="flex flex-col lg:flex-row gap-6">
       {/* Intraday Chart Card */}
@@ -150,6 +158,10 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
             <p className="text-center mt-10 text-gray-500">
               Loading intraday...
             </p>
+          ) : error ? (
+            <div className="w-full px-5 py-20 text-muted-foreground text-xl">
+              Cant show at the moment:/{" "}
+            </div>
           ) : (
             <div className="w-full h-60 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -184,6 +196,10 @@ export default function PriceCharts({ symbol }: { symbol: string }) {
             <p className="text-center mt-10 text-gray-500">
               Loading historical...
             </p>
+          ) : error ? (
+            <div className="w-full px-5 py-20 text-muted-foreground text-xl">
+              Cant show at the moment:/{" "}
+            </div>
           ) : (
             <div className="w-full h-60 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">

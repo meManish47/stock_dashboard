@@ -3,7 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provide";
 import HeaderComponent from "@/components/header/header";
 export const metadata: Metadata = {
-  title: "Stocks Stellar",
+  title: "StockTrak",
   description: "Place to view stocks and get latest updates",
 };
 
